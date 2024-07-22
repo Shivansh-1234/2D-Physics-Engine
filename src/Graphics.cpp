@@ -23,7 +23,7 @@ bool Graphics::OpenWindow() {
     SDL_GetCurrentDisplayMode(0, &display_mode);
     windowWidth = display_mode.w;
     windowHeight = display_mode.h;
-    window = SDL_CreateWindow("2D Physics Engine", 0, 0, windowWidth, windowHeight, SDL_WINDOW_BORDERLESS);
+    window = SDL_CreateWindow("2D Physics Engine", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1920, 1080, SDL_WINDOW_RESIZABLE);
     if (!window) {
         std::cerr << "Error creating SDL window" << std::endl;
         return false;

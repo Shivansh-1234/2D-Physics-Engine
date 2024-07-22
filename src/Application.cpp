@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Physics/Constants.h"
 
 bool Application::IsRunning() {
     return running;
@@ -10,7 +11,9 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    // TODO: setup objects in the scene
+    particle = new Particle(50, 100, 1.0f);
+    particle->setRadius(4);
+    particle->setAcceleration(Vec2(2.f, 9.8f) * Constants::PIXELS_PER_METER);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -35,7 +38,41 @@ void Application::Input() {
 // Update function (called several times per second to update objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Update() {
-    // TODO: update all objects in the scene
+
+    static int timePreviousFrame;
+    int timeToWait = Constants::MILLISECS_PER_FRAME - (SDL_GetTicks()  - timePreviousFrame);
+    if(timeToWait > 0){
+        SDL_Delay(timeToWait);
+    }
+    float deltaTime = (SDL_GetTicks() - timePreviousFrame) / 1000.f;
+    if(deltaTime > 0.016){
+        deltaTime = 0.016;
+    }
+    timePreviousFrame = SDL_GetTicks();
+
+    // Handling collision with the top and bottom screen boundaries
+    if ((particle->getPosition().y + particle->getRadius()) > Constants::SCREEN_HEIGHT) {
+        particle->getPosition().y = Constants::SCREEN_HEIGHT - particle->getRadius();
+        particle->getVelocity().y *= -0.9f;
+    } else if ((particle->getPosition().y - particle->getRadius()) < 0) {
+        particle->getPosition().y = particle->getRadius();
+        particle->getVelocity().y *= -0.9f;
+    }
+
+    // Handling collision with the left and right screen boundaries
+    if ((particle->getPosition().x + particle->getRadius()) > Constants::SCREEN_WIDTH) {
+        particle->getPosition().x = Constants::SCREEN_WIDTH - particle->getRadius();
+        particle->getVelocity().x *= -0.9f;
+    } else if ((particle->getPosition().x - particle->getRadius()) < 0) {
+        particle->getPosition().x = particle->getRadius();
+        particle->getVelocity().x *= -0.9f;
+    }
+
+    //-----------
+
+    particle->setVelocity(particle->getVelocity() + (particle->getAcceleration() * deltaTime));
+
+    particle->setPosition(particle->getPosition() + (particle->getVelocity() * deltaTime));
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -43,7 +80,7 @@ void Application::Update() {
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
     Graphics::ClearScreen(0xFF056263);
-    Graphics::DrawFillCircle(200, 200, 40, 0xFFFFFFFF);
+    Graphics::DrawFillCircle( particle->getPosition().x, particle->getPosition().y, 4, 0xFFFFFFFF);
     Graphics::RenderFrame();
 }
 
@@ -51,7 +88,6 @@ void Application::Render() {
 // Destroy function to delete objects and close the window
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Destroy() {
-    // TODO: destroy all objects in the scene
-
+    delete particle;
     Graphics::CloseWindow();
 }

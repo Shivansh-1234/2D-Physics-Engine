@@ -1,3 +1,8 @@
 #include "Particle.h"
 
-// TODO:
+#include <iostream>
+
+Particle::~Particle()
+{
+    std::cout << "Particle destroyed" << std::endl;
+}
