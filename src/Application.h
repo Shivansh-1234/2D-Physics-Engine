@@ -7,7 +7,8 @@
 class Application {
     private:
         bool running = false;
-        Particle* particle;
+        std::vector<Particle*> particleVec;
+        Vec2 pushForce { 0.f , 0.f };
 
     public:
         Application() = default;

@@ -10,18 +10,16 @@
 class Particle
 {
 public:
+    //public functions
+    void integrate(float dt);
+    void applyForce(const Vec2& force);
+    void clearAllForces();
+
+    //constructor destructor
     Particle() = default;
-
-    Particle(const float positionX, const float positionY, const float mass)
-        : position(positionX, positionY), mass(mass)
-    {
-
-    }
-
-    Particle(const Vec2& position, const Vec2& velocity, const Vec2& acceleration,const float mass, const int radius)
-            : position(position), velocity(velocity), acceleration(acceleration), mass(mass), radius(radius)
-    {}
-    ~Particle();
+    Particle(float positionX, float positionY, float mass);
+    Particle(const Vec2& position, const Vec2& velocity, const Vec2& acceleration,float mass, int radius);
+    ~Particle() = default;
 
     //getters and setters
     void setPosition(const Vec2& position) { this->position = position; }
@@ -33,15 +31,18 @@ public:
     Vec2& getPosition() { return  position; }
     Vec2& getVelocity() { return  velocity; }
     Vec2& getAcceleration() { return  acceleration; }
-    float getMass() { return mass; }
-    int getRadius() { return radius; }
+    float getMass() const { return mass; }
+    int getRadius() const { return radius; }
 
 private:
     Vec2 position { 0, 0 };
     Vec2 velocity { 0, 0 };
     Vec2 acceleration { 0, 0};
     float mass { 0 };
+    float invMass { 0 };
     int radius { 0 };
+
+    Vec2 sumForces;
 };
 
 #endif
