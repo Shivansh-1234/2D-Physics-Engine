@@ -17,7 +17,7 @@ void Application::Setup() {
     smallBall->setRadius(4);
     smallBall->setAcceleration(Vec2(2.f, 9.8f) * Constants::PIXELS_PER_METER);
 
-    auto* largeBall = new Particle(200.f, 200, 3.0f);
+    auto* largeBall = new Particle(Constants::SCREEN_WIDTH / 2, Constants::SCREEN_HEIGHT / 2, 3.0f);
     largeBall->setRadius(12);
     largeBall->setAcceleration(Vec2(2.f, 9.8f) * Constants::PIXELS_PER_METER);
 
@@ -28,6 +28,13 @@ void Application::Setup() {
     fluid.y = Constants::SCREEN_HEIGHT / 2;
     fluid.w = Constants::SCREEN_WIDTH;
     fluid.h = Constants::SCREEN_HEIGHT / 2;
+}
+
+void Application::spawnParticle(int mx, int my)
+{
+    Particle* particle = new Particle(mx, my, 1.f);
+    particle->setRadius(5.f);
+    particleVec.push_back(particle);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -62,13 +69,26 @@ void Application::Input() {
                 if (event.key.keysym.sym == SDLK_a)
                     pushForce.x = 0;
                 break;
+            case SDL_MOUSEMOTION:
+                mousePos.x = event.motion.x;
+                mousePos.y = event.motion.y;
+                break;
             case SDL_MOUSEBUTTONDOWN:
-                if(event.button.button == SDL_BUTTON_LEFT){
-                    int mx, my;
-                    SDL_GetMouseState(&mx, &my);
-                    Particle* particle = new Particle(mx, my, 1.f);
-                    particle->setRadius(5.f);
-                    particleVec.push_back(particle);
+                if (!isLeftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
+                    isLeftMouseButtonDown = true;
+                    int x, y;
+                    SDL_GetMouseState(&x, &y);
+                    mousePos.x = x;
+                    mousePos.y = y;
+                }
+                break;
+            case SDL_MOUSEBUTTONUP:
+                if (isLeftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
+                    isLeftMouseButtonDown = false;
+                    Vec2 forceDirection = particleVec[0]->getPosition() - mousePos;
+                    Vec2 impulseDirection = forceDirection.UnitVector();
+                    float impulseMagnitude = forceDirection.Magnitude() * 5.0;
+                    particleVec[0]->setVelocity(impulseDirection * impulseMagnitude);
                 }
                 break;
         }
@@ -97,14 +117,17 @@ void Application::Update() {
         Vec2 weight = Vec2(0.f, particle->getMass() * 9.8f * Constants::PIXELS_PER_METER);
 
         //particle->applyForce(wind);
-        particle->applyForce(weight);
+        //particle->applyForce(weight);
         particle->applyForce(pushForce);
 
         //generate drag force
-        if(particle->getPosition().y >= fluid.y){
-            Vec2 dragForce = Force::GenerateDragForce(*particle, 0.03f);
-            particle->applyForce(dragForce);
-        }
+        // if(particle->getPosition().y >= fluid.y){
+        //     Vec2 dragForce = Force::GenerateDragForce(*particle, 0.03f);
+        //     particle->applyForce(dragForce);
+        // }
+
+        Vec2 friction = Force::GenerateFrictionForce(*particle, 10.f * Constants::PIXELS_PER_METER);
+        particle->applyForce(friction);
     }
 
     for(auto& particle : particleVec){
@@ -137,10 +160,14 @@ void Application::Update() {
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
-    Graphics::ClearScreen(0xFF056263);
+    Graphics::ClearScreen(0xFF288249);
 
     //draw fluid
-    Graphics::DrawFillRect(fluid.x + fluid.w / 2, fluid.y + fluid.h / 2, fluid.w, fluid.h, 0xFF6E3713);
+    //Graphics::DrawFillRect(fluid.x + fluid.w / 2, fluid.y + fluid.h / 2, fluid.w, fluid.h, 0xFF6E3713);
+
+    if(isLeftMouseButtonDown){
+        Graphics::DrawLine(particleVec[0]->getPosition().x, particleVec[0]->getPosition().y, mousePos.x, mousePos.y, 0xFF0000FF);
+    }
 
     for(auto& particle : particleVec){
         Graphics::DrawFillCircle( particle->getPosition().x, particle->getPosition().y, particle->getRadius(), 0xFFFFFFFF);
