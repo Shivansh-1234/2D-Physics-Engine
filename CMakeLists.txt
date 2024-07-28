@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22)
 project(2D_PHYSICS_ENGINE)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 add_executable(${PROJECT_NAME} src/main.cpp
         src/Physics/Particle.cpp
@@ -11,7 +11,11 @@ add_executable(${PROJECT_NAME} src/main.cpp
         lib/SDL2_gfx/SDL2_gfxPrimitives.c
         lib/SDL2_gfx/SDL2_imageFilter.c
         lib/SDL2_gfx/SDL2_rotozoom.c
-        src/Physics/Constants.h)
+        src/Physics/Constants.h
+        src/Physics/Force.cpp
+        src/Physics/Force.h
+        src/Physics/Math.cpp
+        src/Physics/Math.h)
 
 # --- SDL2 SETUP ---
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)

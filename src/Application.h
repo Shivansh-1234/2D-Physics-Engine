@@ -9,6 +9,7 @@ class Application {
         bool running = false;
         std::vector<Particle*> particleVec;
         Vec2 pushForce { 0.f , 0.f };
+        SDL_Rect fluid;
 
     public:
         Application() = default;
@@ -19,6 +20,8 @@ class Application {
         void Update();
         void Render();
         void Destroy();
+
+        void spawnRandomParticle();
 };
 
 #endif
