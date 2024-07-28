@@ -13,15 +13,12 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    auto* smallBall = new Particle(50, 100, 1.0f);
-    smallBall->setRadius(4);
-    smallBall->setAcceleration(Vec2(2.f, 9.8f) * Constants::PIXELS_PER_METER);
+    auto* smallBall = new Particle(200, 200, 1.0);
+    smallBall->setRadius(6);
+    particleVec.push_back(smallBall);
 
-    auto* largeBall = new Particle(Constants::SCREEN_WIDTH / 2, Constants::SCREEN_HEIGHT / 2, 3.0f);
-    largeBall->setRadius(12);
-    largeBall->setAcceleration(Vec2(2.f, 9.8f) * Constants::PIXELS_PER_METER);
-
-    //particleVec.push_back(smallBall);
+    auto* largeBall = new Particle(500, 500, 20.0);
+    largeBall->setRadius(20);
     particleVec.push_back(largeBall);
 
     fluid.x = 0;
@@ -111,24 +108,19 @@ void Application::Update() {
     }
     timePreviousFrame = SDL_GetTicks();
 
-    Vec2 wind = Vec2(0.2f * Constants::PIXELS_PER_METER, 0.f);
 
     for(auto& particle : particleVec){
-        Vec2 weight = Vec2(0.f, particle->getMass() * 9.8f * Constants::PIXELS_PER_METER);
+         particle->applyForce(pushForce);
 
-        //particle->applyForce(wind);
-        //particle->applyForce(weight);
-        particle->applyForce(pushForce);
-
-        //generate drag force
-        // if(particle->getPosition().y >= fluid.y){
-        //     Vec2 dragForce = Force::GenerateDragForce(*particle, 0.03f);
-        //     particle->applyForce(dragForce);
-        // }
-
-        Vec2 friction = Force::GenerateFrictionForce(*particle, 10.f * Constants::PIXELS_PER_METER);
+        Vec2 friction = Force::GenerateFrictionForce(*particle, 20.f);
         particle->applyForce(friction);
     }
+
+    Vec2 gravForce = Force::GenerateGravitationalForce(*particleVec[0], *particleVec[1], 2000.f, 5.f, 100.f);
+    //3rd law of motion
+    particleVec[0]->applyForce(gravForce);
+    particleVec[1]->applyForce(-gravForce);
+
 
     for(auto& particle : particleVec){
         particle->integrate(deltaTime);
@@ -160,7 +152,7 @@ void Application::Update() {
 // Render function (called several times per second to draw objects)
 ///////////////////////////////////////////////////////////////////////////////
 void Application::Render() {
-    Graphics::ClearScreen(0xFF288249);
+    Graphics::ClearScreen(0xFF000000);
 
     //draw fluid
     //Graphics::DrawFillRect(fluid.x + fluid.w / 2, fluid.y + fluid.h / 2, fluid.w, fluid.h, 0xFF6E3713);
@@ -169,9 +161,8 @@ void Application::Render() {
         Graphics::DrawLine(particleVec[0]->getPosition().x, particleVec[0]->getPosition().y, mousePos.x, mousePos.y, 0xFF0000FF);
     }
 
-    for(auto& particle : particleVec){
-        Graphics::DrawFillCircle( particle->getPosition().x, particle->getPosition().y, particle->getRadius(), 0xFFFFFFFF);
-    }
+    Graphics::DrawFillCircle( particleVec[0]->getPosition().x, particleVec[0]->getPosition().y, particleVec[0]->getRadius(), 0xFFFFFF00);
+    Graphics::DrawFillCircle( particleVec[1]->getPosition().x, particleVec[1]->getPosition().y, particleVec[1]->getRadius(), 0xFFADD8E6);
 
     Graphics::RenderFrame();
 }
