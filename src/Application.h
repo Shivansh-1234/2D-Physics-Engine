@@ -12,6 +12,7 @@ class Application {
         SDL_Rect fluid;
         Vec2 mousePos { 0.f , 0.f};
         bool isLeftMouseButtonDown = false;
+        Vec2 anchor { 0.f , 0.f};
 
     public:
         Application() = default;

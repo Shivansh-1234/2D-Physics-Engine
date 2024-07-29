@@ -1,4 +1,7 @@
 #include "Application.h"
+
+#include <bemapiset.h>
+
 #include "Physics/Constants.h"
 #include "Physics/Force.h"
 #include "Physics/Math.h"
@@ -13,18 +16,17 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    auto* smallBall = new Particle(200, 200, 1.0);
-    smallBall->setRadius(6);
-    particleVec.push_back(smallBall);
-
-    auto* largeBall = new Particle(500, 500, 20.0);
-    largeBall->setRadius(20);
-    particleVec.push_back(largeBall);
+    auto* bob = new Particle(Constants::SCREEN_WIDTH / 2, Constants::SCREEN_HEIGHT / 2, 10.0);
+    bob->setRadius(10);
+    particleVec.push_back(bob);
 
     fluid.x = 0;
     fluid.y = Constants::SCREEN_HEIGHT / 2;
     fluid.w = Constants::SCREEN_WIDTH;
     fluid.h = Constants::SCREEN_HEIGHT / 2;
+
+    anchor.x = Constants::SCREEN_WIDTH / 2;
+    anchor.y = 30.f;
 }
 
 void Application::spawnParticle(int mx, int my)
@@ -109,17 +111,19 @@ void Application::Update() {
     timePreviousFrame = SDL_GetTicks();
 
 
+
     for(auto& particle : particleVec){
          particle->applyForce(pushForce);
 
-        Vec2 friction = Force::GenerateFrictionForce(*particle, 20.f);
-        particle->applyForce(friction);
+        Vec2 drag = Force::GenerateDragForce(*particle, 0.01f);
+        particle->applyForce(drag);
+
+        Vec2 weight = Vec2(0.f, particle->getMass() * 9.8f * Constants::PIXELS_PER_METER);
+        particle->applyForce(weight);
     }
 
-    Vec2 gravForce = Force::GenerateGravitationalForce(*particleVec[0], *particleVec[1], 2000.f, 5.f, 100.f);
-    //3rd law of motion
-    particleVec[0]->applyForce(gravForce);
-    particleVec[1]->applyForce(-gravForce);
+    Vec2 springForce = Force::GenerateSpringForce(*particleVec[0], anchor, 200.f, 40.f);
+    particleVec[0]->applyForce(springForce);
 
 
     for(auto& particle : particleVec){
@@ -161,8 +165,11 @@ void Application::Render() {
         Graphics::DrawLine(particleVec[0]->getPosition().x, particleVec[0]->getPosition().y, mousePos.x, mousePos.y, 0xFF0000FF);
     }
 
+    Graphics::DrawLine(anchor.x, anchor.y, particleVec[0]->getPosition().x,
+        particleVec[0]->getPosition().y, 0xFF00BAFF);
+
     Graphics::DrawFillCircle( particleVec[0]->getPosition().x, particleVec[0]->getPosition().y, particleVec[0]->getRadius(), 0xFFFFFF00);
-    Graphics::DrawFillCircle( particleVec[1]->getPosition().x, particleVec[1]->getPosition().y, particleVec[1]->getRadius(), 0xFFADD8E6);
+    Graphics::DrawFillCircle( anchor.x, anchor.y, 2.f, 0xFFADC8E6);
 
     Graphics::RenderFrame();
 }
