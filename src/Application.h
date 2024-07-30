@@ -13,7 +13,7 @@ class Application {
         Vec2 mousePos { 0.f , 0.f};
         bool isLeftMouseButtonDown = false;
         Vec2 anchor { 0.f , 0.f};
-        float restLength = 25.f;
+        float restLength = 200.f;
 
     public:
         Application() = default;
