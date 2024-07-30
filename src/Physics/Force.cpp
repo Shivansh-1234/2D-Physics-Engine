@@ -57,4 +57,17 @@ Vec2 Force::GenerateSpringForce(Particle& particle, Vec2 anchor, float restlengt
     return springForce;
 }
 
+Vec2 Force::GenerateSpringForce(Particle& particleA, Particle& particleB, float restlength, float k){
+    Vec2 d = particleA.getPosition()  - particleB.getPosition();
+
+    float displacement = d.Magnitude() - restlength;
+
+    Vec2 springDirection = d.UnitVector();
+    float springMagnitude = -k * displacement;
+
+    Vec2 springForce = springDirection * springMagnitude;
+
+    return springForce;
+}
+
 

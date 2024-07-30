@@ -16,9 +16,15 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    auto* bob = new Particle(Constants::SCREEN_WIDTH / 2, Constants::SCREEN_HEIGHT / 2, 10.0);
-    bob->setRadius(10);
-    particleVec.push_back(bob);
+    // auto* bob = new Particle(Constants::SCREEN_WIDTH / 2, Constants::SCREEN_HEIGHT / 2, 10.0);
+    // bob->setRadius(10);
+    // particleVec.push_back(bob);
+    Vec2 particlePos = Vec2(Constants::SCREEN_WIDTH / 2 , 30);
+    for(int i = 0 ; i < 15; i++){
+        Particle* particle = new Particle(particlePos.x, particlePos.y + (i * restLength), 2.f);
+        particle->setRadius(6.f);
+        particleVec.push_back(particle);
+    }
 
     fluid.x = 0;
     fluid.y = Constants::SCREEN_HEIGHT / 2;
@@ -84,10 +90,10 @@ void Application::Input() {
             case SDL_MOUSEBUTTONUP:
                 if (isLeftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
                     isLeftMouseButtonDown = false;
-                    Vec2 forceDirection = particleVec[0]->getPosition() - mousePos;
+                    Vec2 forceDirection = particleVec[particleVec.size() - 1]->getPosition() - mousePos;
                     Vec2 impulseDirection = forceDirection.UnitVector();
                     float impulseMagnitude = forceDirection.Magnitude() * 5.0;
-                    particleVec[0]->setVelocity(impulseDirection * impulseMagnitude);
+                    particleVec[particleVec.size() - 1]->setVelocity(impulseDirection * impulseMagnitude);
                 }
                 break;
         }
@@ -115,16 +121,24 @@ void Application::Update() {
     for(auto& particle : particleVec){
          particle->applyForce(pushForce);
 
-        Vec2 drag = Force::GenerateDragForce(*particle, 0.01f);
+        Vec2 drag = Force::GenerateDragForce(*particle, 0.002f);
         particle->applyForce(drag);
 
         Vec2 weight = Vec2(0.f, particle->getMass() * 9.8f * Constants::PIXELS_PER_METER);
         particle->applyForce(weight);
     }
 
-    Vec2 springForce = Force::GenerateSpringForce(*particleVec[0], anchor, 200.f, 40.f);
+    float coeff = 300.f;
+
+    Vec2 springForce = Force::GenerateSpringForce(*particleVec[0], anchor, restLength, coeff);
     particleVec[0]->applyForce(springForce);
 
+
+    for(int i = 1 ; i < particleVec.size(); i++){
+        Vec2 springForce = Force::GenerateSpringForce(*particleVec[i], *particleVec[i-1], restLength, coeff);
+        particleVec[i]->applyForce(springForce);
+        particleVec[i-1]->applyForce(-springForce);
+    }
 
     for(auto& particle : particleVec){
         particle->integrate(deltaTime);
@@ -161,15 +175,26 @@ void Application::Render() {
     //draw fluid
     //Graphics::DrawFillRect(fluid.x + fluid.w / 2, fluid.y + fluid.h / 2, fluid.w, fluid.h, 0xFF6E3713);
 
+    Graphics::DrawFillCircle(anchor.x, anchor.y, 5.f, 0xFF0000FF);
+    Graphics::DrawLine(anchor.x, anchor.y, particleVec[0]->getPosition().x, particleVec[0]->getPosition().y,  0xFF00AEFF);
+
     if(isLeftMouseButtonDown){
-        Graphics::DrawLine(particleVec[0]->getPosition().x, particleVec[0]->getPosition().y, mousePos.x, mousePos.y, 0xFF0000FF);
+        Graphics::DrawLine(particleVec[particleVec.size() - 1]->getPosition().x, particleVec[particleVec.size() - 1]->getPosition().y, mousePos.x, mousePos.y, 0xFF0000FF);
     }
 
-    Graphics::DrawLine(anchor.x, anchor.y, particleVec[0]->getPosition().x,
-        particleVec[0]->getPosition().y, 0xFF00BAFF);
+    for(int i = 0 ; i < particleVec.size() - 1 ; i++){
+            Graphics::DrawLine(particleVec[i]->getPosition().x, particleVec[i]->getPosition().y, particleVec[i + 1]->getPosition().x,
+        particleVec[i + 1]->getPosition().y, 0xFF00BAFF);
 
-    Graphics::DrawFillCircle( particleVec[0]->getPosition().x, particleVec[0]->getPosition().y, particleVec[0]->getRadius(), 0xFFFFFF00);
-    Graphics::DrawFillCircle( anchor.x, anchor.y, 2.f, 0xFFADC8E6);
+    }
+
+    for(int i = 0 ; i < particleVec.size()  ; i++){
+        Graphics::DrawFillCircle( particleVec[i]->getPosition().x, particleVec[i]->getPosition().y, particleVec[i]->getRadius(), 0xFFFFFF00);
+    }
+
+
+
+    //Graphics::DrawFillCircle( anchor.x, anchor.y, 2.f, 0xFFADC8E6);
 
     Graphics::RenderFrame();
 }
