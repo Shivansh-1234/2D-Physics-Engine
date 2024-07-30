@@ -121,7 +121,7 @@ void Application::Update() {
     for(auto& particle : particleVec){
          particle->applyForce(pushForce);
 
-        Vec2 drag = Force::GenerateDragForce(*particle, 0.002f);
+        Vec2 drag = Force::GenerateDragForce(*particle, 0.005f);
         particle->applyForce(drag);
 
         Vec2 weight = Vec2(0.f, particle->getMass() * 9.8f * Constants::PIXELS_PER_METER);
