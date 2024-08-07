@@ -3,15 +3,15 @@
 
 #include "Vec2.h"
 
-class Particle;
+class Body;
 
 class Force {
 public:
-    static Vec2 GenerateDragForce(Particle& particle, float k);
-    static Vec2 GenerateFrictionForce(Particle& particle, float k);
-    static Vec2 GenerateGravitationalForce(Particle& particleA, Particle& particleB, float G, float minDistance, float maxDistance);
-    static Vec2 GenerateSpringForce(Particle& particle, Vec2 anchor, float restlength, float k);
-    static Vec2 GenerateSpringForce(Particle& particleA, Particle& particleB, float restlength, float k);
+    static Vec2 GenerateDragForce(Body& body, float k);
+    static Vec2 GenerateFrictionForce(Body& body, float k);
+    static Vec2 GenerateGravitationalForce(Body& bodyA, Body& bodyB, float G, float minDistance, float maxDistance);
+    static Vec2 GenerateSpringForce(Body& body, Vec2 anchor, float restlength, float k);
+    static Vec2 GenerateSpringForce(Body& bodyA, Body& bodyB, float restlength, float k);
 };
 
 

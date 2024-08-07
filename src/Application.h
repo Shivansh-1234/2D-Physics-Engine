@@ -2,12 +2,12 @@
 #define APPLICATION_H
 
 #include "./Graphics.h"
-#include "Physics/Particle.h"
+#include "Physics/Body.h"
 
 class Application {
     private:
         bool running = false;
-        std::vector<Particle*> particleVec;
+        std::vector<Body*> bodyVec;
         Vec2 pushForce { 0.f , 0.f };
         SDL_Rect fluid;
         Vec2 mousePos { 0.f , 0.f};
@@ -20,13 +20,13 @@ class Application {
         ~Application() = default;
         bool IsRunning();
         void Setup();
-        void spawnParticle(int mx, int my);
+        void spawnBody(int mx, int my);
         void Input();
         void Update();
         void Render();
         void Destroy();
 
-        void spawnRandomParticle();
+        void spawnRandomBody();
 };
 
 #endif

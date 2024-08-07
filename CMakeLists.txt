@@ -4,7 +4,7 @@ project(2D_PHYSICS_ENGINE)
 set(CMAKE_CXX_STANDARD 17)
 
 add_executable(${PROJECT_NAME} src/main.cpp
-        src/Physics/Particle.cpp
+        src/Physics/Body.cpp
         src/Physics/Vec2.cpp
         src/Application.cpp
         src/Graphics.cpp
@@ -15,7 +15,16 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/Physics/Force.cpp
         src/Physics/Force.h
         src/Physics/Math.cpp
-        src/Physics/Math.h)
+        src/Physics/Math.h
+        src/Physics/Shapes/Shape.cpp
+        src/Physics/Shapes/Shape.h
+        src/Physics/enums/ShapeType.h
+        src/Physics/Shapes/CircleShape.cpp
+        src/Physics/Shapes/CircleShape.h
+        src/Physics/Shapes/PolygonShape.cpp
+        src/Physics/Shapes/PolygonShape.h
+        src/Physics/Shapes/BoxShape.cpp
+        src/Physics/Shapes/BoxShape.h)
 
 # --- SDL2 SETUP ---
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
