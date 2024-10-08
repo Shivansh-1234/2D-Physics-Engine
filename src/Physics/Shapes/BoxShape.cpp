@@ -2,7 +2,17 @@
 #include "BoxShape.h"
 
 BoxShape::BoxShape(float width, float height)
-{
+    :width(width), height(height)   {
+
+    localVertices.push_back(Vec2(-width / 2.f, -height / 2.f));
+    localVertices.push_back(Vec2(width / 2.f, -height / 2.f));
+    localVertices.push_back(Vec2(width / 2.f, height / 2.f));
+    localVertices.push_back(Vec2(-width / 2.f, height / 2.f));
+
+    worldVertices.push_back(Vec2(-width / 2.0, -height / 2.0));
+    worldVertices.push_back(Vec2(+width / 2.0, -height / 2.0));
+    worldVertices.push_back(Vec2(+width / 2.0, +height / 2.0));
+    worldVertices.push_back(Vec2(-width / 2.0, +height / 2.0));
 
 }
 
@@ -23,7 +33,7 @@ Shape* BoxShape::Clone() const
 
 float BoxShape::GetMomentOfIntertia() const
 {
-    return (0.83333) * (width * width * height * height);
+    return (0.83333) * (width * width + height * height);
 }
 
 

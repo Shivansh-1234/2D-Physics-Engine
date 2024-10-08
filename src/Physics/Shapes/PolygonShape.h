@@ -15,19 +15,25 @@ public:
     PolygonShape() = default;
     PolygonShape(std::vector<Vec2> vertices);
     virtual ~PolygonShape();
-    ShapeType GetType() const override;
+    virtual ShapeType GetType() const override;
     Shape* Clone() const override;
     float GetMomentOfIntertia() const override;
 
     void addVertice(const Vec2& vertice);
     void removeVertice(const Vec2& vertice);
 
-    //g n s
-    void setVertices(const std::vector<Vec2>& vertices);
-    std::vector<Vec2> getVertices() const;
+    void localToWorld(float angle, const Vec2& position);
 
-private:
-    std::vector<Vec2> vertices;
+    //g n s
+    void setLocalVertices(const std::vector<Vec2>& vertices);
+    std::vector<Vec2> getLocalVertices() const;
+
+    void setWorldVertices(const std::vector<Vec2>& vertices);
+    std::vector<Vec2> getWorldVertices() const;
+
+protected:
+    std::vector<Vec2> localVertices;
+    std::vector<Vec2> worldVertices;
 };
 
 

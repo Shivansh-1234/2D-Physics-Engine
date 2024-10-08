@@ -14,6 +14,15 @@ PolygonShape::~PolygonShape()
 
 }
 
+void PolygonShape::localToWorld(float angle, const Vec2& position)
+{
+    for(int i = 0; i < localVertices.size(); i++){
+        worldVertices[i] = localVertices[i].Rotate(angle); //rotate
+        worldVertices[i] += position; //translate
+    }
+}
+
+
 ShapeType PolygonShape::GetType() const
 {
     return ShapeType::POLYGON;
@@ -21,7 +30,7 @@ ShapeType PolygonShape::GetType() const
 
 Shape* PolygonShape::Clone() const
 {
-    return new PolygonShape(this->vertices);
+    return new PolygonShape(this->localVertices);
 }
 
 float PolygonShape::GetMomentOfIntertia() const
@@ -33,23 +42,35 @@ float PolygonShape::GetMomentOfIntertia() const
 
 void PolygonShape::addVertice(const Vec2& vertice)
 {
-    vertices.push_back(vertice);
+    localVertices.push_back(vertice);
 }
 
 void PolygonShape::removeVertice(const Vec2& vertice)
 {
-    if(!vertices.empty())
+    if(!localVertices.empty())
     {
-        vertices.pop_back();
+        localVertices.pop_back();
     }
 }
 
-std::vector<Vec2> PolygonShape::getVertices() const
+std::vector<Vec2> PolygonShape::getLocalVertices() const
 {
-    return vertices;
+    return localVertices;
 }
 
-void PolygonShape::setVertices(const std::vector<Vec2>& vertices)
+void PolygonShape::setLocalVertices(const std::vector<Vec2>& vertices)
 {
-    this->vertices = vertices;
+    this->localVertices = vertices;
 }
+
+void PolygonShape::setWorldVertices(const std::vector<Vec2>& vertices)
+{
+    this->worldVertices = vertices;
+}
+
+std::vector<Vec2> PolygonShape::getWorldVertices() const
+{
+    return worldVertices;
+}
+
+

@@ -13,6 +13,7 @@ class Body
 {
 public:
     //public functions
+    void update(float dt);
     void integrateLinear(float dt);
     void integrateAngular(float dt);
     void applyForce(const Vec2& force);

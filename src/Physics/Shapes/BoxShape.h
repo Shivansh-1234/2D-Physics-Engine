@@ -21,7 +21,6 @@ public:
     float getWidth() const;
     float getHeight() const;
 
-
 private:
     float width;
     float height;

@@ -2,6 +2,8 @@
 #include "Shapes/Shape.h"
 #include <iostream>
 
+#include "Shapes/PolygonShape.h"
+
 Body::Body(const Shape& shape, const float positionX, const float positionY, const float mass)
     : position(positionX, positionY),
       mass(mass)
@@ -45,6 +47,18 @@ Body::Body(const Shape& shape, const Vec2& position, const Vec2& velocity, const
     }
 }
 
+void Body::update(float dt)
+{
+    integrateLinear(dt);
+    integrateAngular(dt);
+    bool isPolygon = getShape()->GetType() == ShapeType::POLYGON || getShape()->GetType() == ShapeType::BOX;
+    if(isPolygon){
+        auto* polygonShape = dynamic_cast<PolygonShape*>(getShape());
+        polygonShape->localToWorld(getRotation(), getPosition());
+    }
+}
+
+
 void Body::integrateAngular(float dt)
 {
     //F = MA , newtons second law
@@ -60,6 +74,7 @@ void Body::integrateAngular(float dt)
 void Body::applyTorque(float torque)
 {
     sumTorque += torque;
+    std::cout << sumTorque << std::endl;
 }
 
 void Body::clearTorque()

@@ -5,6 +5,7 @@
 #include "Physics/Constants.h"
 #include "Physics/Force.h"
 #include "Physics/Math.h"
+#include "Physics/Shapes/BoxShape.h"
 #include "Physics/Shapes/CircleShape.h"
 
 bool Application::IsRunning() {
@@ -17,8 +18,11 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    auto* circle = new Body(CircleShape(50.f), 100.f, 100.f, 1.f);
-    bodyVec.push_back(circle);
+    // auto* circle = new Body(CircleShape(50.f), 100.f, 100.f, 1.f);
+    // bodyVec.push_back(circle);
+
+    auto* box = new Body(BoxShape(200.f, 100.f), Constants::SCREEN_WIDTH / 2.f, Constants::SCREEN_HEIGHT / 2.f, 1.f);
+    bodyVec.push_back(box);
 
     fluid.x = 0;
     fluid.y = Constants::SCREEN_HEIGHT / 2;
@@ -118,10 +122,10 @@ void Application::Update() {
         // Vec2 drag = Force::GenerateDragForce(*body, 0.003f);
         // body->applyForce(drag);
 
-        Vec2 weight = Vec2(0.f, body->getMass() * 9.8f * Constants::PIXELS_PER_METER);
-        body->applyForce(weight);
+        //Vec2 weight = Vec2(0.f, body->getMass() * 9.8f * Constants::PIXELS_PER_METER);
+        //body->applyForce(weight);
 
-        float torque = 20.f;
+        float torque = 2000.f;
         body->applyTorque(torque);
     }
 
@@ -147,8 +151,7 @@ void Application::Update() {
     // bodyVec[3]->applyForce(-sf);
 
     for(auto& body : bodyVec){
-        body->integrateLinear(deltaTime);
-        body->integrateAngular(deltaTime);
+        body->update(deltaTime);
     }
 
     for(auto& body : bodyVec){
@@ -210,6 +213,11 @@ void Application::Render() {
             auto* circleShape = dynamic_cast<CircleShape*>(i->getShape());
 
             Graphics::DrawCircle( i->getPosition().x, i->getPosition().y, circleShape->getRadius(), i->getRotation(), 0xFFFFFF00);
+        }
+
+        if(i->getShape()->GetType() == ShapeType::BOX)  {
+            auto* boxShape = dynamic_cast<BoxShape*>(i->getShape());
+            Graphics::DrawPolygon(i->getPosition().x, i->getPosition().y, boxShape->getWorldVertices(), 0xFFFFFFFF);
         }
     }
 
