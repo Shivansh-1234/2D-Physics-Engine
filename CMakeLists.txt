@@ -24,7 +24,9 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/Physics/Shapes/PolygonShape.cpp
         src/Physics/Shapes/PolygonShape.h
         src/Physics/Shapes/BoxShape.cpp
-        src/Physics/Shapes/BoxShape.h)
+        src/Physics/Shapes/BoxShape.h
+        src/Physics/Collisions/Collision.cpp
+        src/Physics/Collisions/Collision.h)
 
 # --- SDL2 SETUP ---
 set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)

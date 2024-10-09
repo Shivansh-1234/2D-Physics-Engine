@@ -7,6 +7,7 @@
 #include "Physics/Math.h"
 #include "Physics/Shapes/BoxShape.h"
 #include "Physics/Shapes/CircleShape.h"
+#include "Physics/Collisions/Collision.h"
 
 bool Application::IsRunning() {
     return running;
@@ -18,11 +19,13 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    // auto* circle = new Body(CircleShape(50.f), 100.f, 100.f, 1.f);
-    // bodyVec.push_back(circle);
+    auto* bigCircle = new Body(CircleShape(100.f), 100.f, 100.f, 1.f);
+    auto* smallCircle = new Body(CircleShape(50.f), 500.f, 100.f, 1.f);
+    bodyVec.push_back(bigCircle);
+    bodyVec.push_back(smallCircle);
 
-    auto* box = new Body(BoxShape(200.f, 100.f), Constants::SCREEN_WIDTH / 2.f, Constants::SCREEN_HEIGHT / 2.f, 1.f);
-    bodyVec.push_back(box);
+    // auto* box = new Body(BoxShape(200.f, 100.f), Constants::SCREEN_WIDTH / 2.f, Constants::SCREEN_HEIGHT / 2.f, 1.f);
+    // bodyVec.push_back(box);
 
     fluid.x = 0;
     fluid.y = Constants::SCREEN_HEIGHT / 2;
@@ -122,11 +125,14 @@ void Application::Update() {
         // Vec2 drag = Force::GenerateDragForce(*body, 0.003f);
         // body->applyForce(drag);
 
-        //Vec2 weight = Vec2(0.f, body->getMass() * 9.8f * Constants::PIXELS_PER_METER);
-        //body->applyForce(weight);
+        Vec2 weight = Vec2(0.f, body->getMass() * 9.8f * Constants::PIXELS_PER_METER);
+        body->applyForce(weight);
 
-        float torque = 2000.f;
-        body->applyTorque(torque);
+        Vec2 wind = Vec2(20.0 * Constants::PIXELS_PER_METER, 0.0);
+        body->applyForce(wind);
+
+        //float torque = 2000.f;
+       // body->applyTorque(torque);
     }
 
     float coeff = 1500.f;
@@ -152,6 +158,23 @@ void Application::Update() {
 
     for(auto& body : bodyVec){
         body->update(deltaTime);
+    }
+
+
+    for(auto& body : bodyVec){
+        body->setIsColliding(false);
+    }
+
+    for(int i = 0; i <= bodyVec.size() - 1; i++){
+        for(int j = i + 1; j < bodyVec.size(); j++){
+            Body* a = bodyVec[i];
+            Body* b = bodyVec[j];
+
+            if(Collision::IsColliding(a, b)){
+                a->setIsColliding(true);
+                b->setIsColliding(true);
+            }
+        }
     }
 
     for(auto& body : bodyVec){
@@ -212,7 +235,9 @@ void Application::Render() {
         {
             auto* circleShape = dynamic_cast<CircleShape*>(i->getShape());
 
-            Graphics::DrawCircle( i->getPosition().x, i->getPosition().y, circleShape->getRadius(), i->getRotation(), 0xFFFFFF00);
+            Uint32 circleColor = i->getIsColliding() ? 0xFF0000FF : 0xFFFFFFFF;
+
+            Graphics::DrawCircle( i->getPosition().x, i->getPosition().y, circleShape->getRadius(), i->getRotation(), circleColor);
         }
 
         if(i->getShape()->GetType() == ShapeType::BOX)  {

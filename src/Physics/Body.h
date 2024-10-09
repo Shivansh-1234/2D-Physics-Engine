@@ -40,6 +40,7 @@ public:
     void setInvI(float invI) { this->invI = invI; }
     void setSumForces(const Vec2& sumForces) { this->sumForces = sumForces; }
     void setSumTorque(float sumTorque) { this->sumTorque = sumTorque; }
+    void setIsColliding(bool collding) { this->collision = collding; }
 
     Vec2& getPosition() { return  position; }
     Vec2& getVelocity() { return  velocity; }
@@ -54,6 +55,7 @@ public:
     float getInvI() const { return invI; }
     Vec2& getSumForces() { return sumForces; }
     float getSumTorque() const { return sumTorque; }
+    bool getIsColliding() const  { return  collision; }
 
 private:
     //linear moevement
@@ -74,6 +76,8 @@ private:
 
     Vec2 sumForces { 0.f, 0.f};
     float sumTorque { 0.f };
+
+    bool collision { false };
 
     Shape* shape = nullptr;
 };
