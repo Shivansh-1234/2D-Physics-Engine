@@ -1,4 +1,7 @@
 #include "Body.h"
+
+#include <complex>
+
 #include "Shapes/Shape.h"
 #include <iostream>
 
@@ -89,6 +92,10 @@ Body::~Body()
 
 
 void Body::integrateLinear(float dt){
+    if(isStatic()) {
+        return;
+    }
+
     //F = MA , newtons second law
     acceleration = sumForces * invMass;
 
@@ -106,6 +113,11 @@ void Body::applyForce(const Vec2& force){
 void Body::clearAllForces(){
     sumForces.x = 0;
     sumForces.y = 0;
+}
+
+bool Body::isStatic() const {
+    const float epsilon = 0.005f;
+    return invMass < epsilon;
 }
 
 

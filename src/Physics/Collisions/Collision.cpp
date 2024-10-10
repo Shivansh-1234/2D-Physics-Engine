@@ -2,19 +2,19 @@
 
 #include "../Shapes/CircleShape.h"
 
-bool Collision::IsColliding(Body* a, Body* b)
+CollisionInformation Collision::GetCollisionInformation(Body* a, Body* b)
 {
     ShapeType shapeTypeA = a->getShape()->GetType();
     ShapeType shapeTypeB = b->getShape()->GetType();
 
     if(shapeTypeA == ShapeType::CIRCLE && shapeTypeB == ShapeType::CIRCLE){
-        return checkCollisionCircleCiecle(a, b);
+        return checkCollisionCircleCircle(a, b);
     }
 
-    return false;
+    return CollisionInformation();
 }
 
-bool Collision::checkCollisionCircleCiecle(Body* a, Body* b)
+CollisionInformation Collision::checkCollisionCircleCircle(Body* a, Body* b)
 {
     auto* circleA = dynamic_cast<CircleShape*>(a->getShape());
     auto* circleB = dynamic_cast<CircleShape*>(b->getShape());
@@ -22,5 +22,20 @@ bool Collision::checkCollisionCircleCiecle(Body* a, Body* b)
     const Vec2 ab = b->getPosition() - a->getPosition();
     const float radSum = circleA->getRadius() + circleB->getRadius();
 
-    return ab.MagnitudeSquared() <= (radSum * radSum);
+    bool isColliding = ab.MagnitudeSquared() <= (radSum * radSum);
+
+    CollisionInformation tempCollInfo;
+    tempCollInfo.isColliding = isColliding;
+    tempCollInfo.a = a;
+    tempCollInfo.b = b;
+
+    if(tempCollInfo.isColliding){
+        tempCollInfo.normal = ab;
+        tempCollInfo.normal.Normalize();
+        tempCollInfo.start = b->getPosition() - (tempCollInfo.normal * circleB->getRadius());
+        tempCollInfo.end = a->getPosition() + (tempCollInfo.normal * circleA->getRadius());
+        tempCollInfo.depth = (tempCollInfo.end - tempCollInfo.start).Magnitude();
+    }
+
+    return tempCollInfo;
 }

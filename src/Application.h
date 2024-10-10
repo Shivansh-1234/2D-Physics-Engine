@@ -3,6 +3,7 @@
 
 #include "./Graphics.h"
 #include "Physics/Body.h"
+#include "Physics/Collisions/CollisionInformation.h"
 
 class Application {
     private:
@@ -14,6 +15,8 @@ class Application {
         bool isLeftMouseButtonDown = false;
         Vec2 anchor { 0.f , 0.f};
         float restLength = 200.f;
+
+        CollisionInformation circlesCollisionInfo;
 
     public:
         Application() = default;

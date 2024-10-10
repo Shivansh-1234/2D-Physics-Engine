@@ -26,7 +26,11 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/Physics/Shapes/BoxShape.cpp
         src/Physics/Shapes/BoxShape.h
         src/Physics/Collisions/Collision.cpp
-        src/Physics/Collisions/Collision.h)
+        src/Physics/Collisions/Collision.h
+        src/Physics/Collisions/CollisionInformation.cpp
+        src/Physics/Collisions/CollisionInformation.h
+        src/Physics/Collisions/CollisionResolver.cpp
+        src/Physics/Collisions/CollisionResolver.h)
 
 # --- PLATFORM DETECTION ---
 if(WIN32)

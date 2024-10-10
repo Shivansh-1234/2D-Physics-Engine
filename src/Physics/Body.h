@@ -20,6 +20,7 @@ public:
     void clearAllForces();
     void applyTorque(float torque);
     void clearTorque();
+    bool isStatic() const;
 
     //constructor destructor
     Body() = default;

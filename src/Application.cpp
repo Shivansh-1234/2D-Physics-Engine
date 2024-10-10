@@ -6,6 +6,7 @@
 #include "Physics/Shapes/BoxShape.h"
 #include "Physics/Shapes/CircleShape.h"
 #include "Physics/Collisions/Collision.h"
+#include "Physics/Collisions/CollisionResolver.h"
 
 bool Application::IsRunning() {
     return running;
@@ -76,6 +77,10 @@ void Application::Input() {
             case SDL_MOUSEMOTION:
                 mousePos.x = event.motion.x;
                 mousePos.y = event.motion.y;
+                int x, y;
+                SDL_GetMouseState(&x, &y);
+                bodyVec[0]->getPosition().x = x;
+                bodyVec[0]->getPosition().y = y;
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 if (!isLeftMouseButtonDown && event.button.button == SDL_BUTTON_LEFT) {
@@ -124,10 +129,10 @@ void Application::Update() {
         // body->applyForce(drag);
 
         Vec2 weight = Vec2(0.f, body->getMass() * 9.8f * Constants::PIXELS_PER_METER);
-        body->applyForce(weight);
+        //body->applyForce(weight);
 
         Vec2 wind = Vec2(20.0 * Constants::PIXELS_PER_METER, 0.0);
-        body->applyForce(wind);
+        //body->applyForce(wind);
 
         //float torque = 2000.f;
        // body->applyTorque(torque);
@@ -168,9 +173,12 @@ void Application::Update() {
             Body* a = bodyVec[i];
             Body* b = bodyVec[j];
 
-            if(Collision::IsColliding(a, b)){
+            circlesCollisionInfo = Collision::GetCollisionInformation(a, b);
+
+            if(circlesCollisionInfo.isColliding){
                 a->setIsColliding(true);
                 b->setIsColliding(true);
+                CollisionResolver::ResolveCollisionProjectionMethod(circlesCollisionInfo);
             }
         }
     }
@@ -236,6 +244,17 @@ void Application::Render() {
             Uint32 circleColor = i->getIsColliding() ? 0xFF0000FF : 0xFFFFFFFF;
 
             Graphics::DrawCircle( i->getPosition().x, i->getPosition().y, circleShape->getRadius(), i->getRotation(), circleColor);
+
+            if(circlesCollisionInfo.isColliding) {
+                Graphics::DrawFillCircle(circlesCollisionInfo.start.x, circlesCollisionInfo.start.y, 3, 0xFFFF00FF);
+                Graphics::DrawFillCircle(circlesCollisionInfo.end.x, circlesCollisionInfo.end.y, 3, 0xFFFF00FF);
+                Graphics::DrawLine(circlesCollisionInfo.start.x,
+                    circlesCollisionInfo.start.y,
+                    circlesCollisionInfo.start.x + circlesCollisionInfo.normal.x * 15,
+                    circlesCollisionInfo.start.y + circlesCollisionInfo.normal.y * 15,
+                    0xFFFF00FF
+                    );
+            }
         }
 
         if(i->getShape()->GetType() == ShapeType::BOX)  {

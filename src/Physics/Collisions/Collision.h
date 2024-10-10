@@ -2,12 +2,13 @@
 #define COLLISION_H
 
 #include "../Body.h"
+#include "CollisionInformation.h"
 
 class Collision {
 public:
-    static bool IsColliding(Body* a, Body* b);
+    static CollisionInformation GetCollisionInformation(Body* a, Body* b);
 private:
-    static bool checkCollisionCircleCiecle(Body* a, Body* b);
+    static CollisionInformation checkCollisionCircleCircle(Body* a, Body* b);
 };
 
 
