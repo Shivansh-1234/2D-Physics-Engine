@@ -15,10 +15,13 @@ int Graphics::Height() {
 }
 
 bool Graphics::OpenWindow() {
-    if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
-        std::cerr << "Error initializing SDL" << std::endl;
-        return false;
-    }
+
+    #if defined(__WIN32__) || defined(_WIN32)
+        if (SDL_Init(SDL_INIT_EVERYTHING) != 0) {
+            std::cerr << "Error initializing SDL" << std::endl;
+            return false;
+        }
+    #endif
     SDL_DisplayMode display_mode;
     SDL_GetCurrentDisplayMode(0, &display_mode);
     windowWidth = display_mode.w;

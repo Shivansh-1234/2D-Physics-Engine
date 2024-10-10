@@ -28,10 +28,32 @@ add_executable(${PROJECT_NAME} src/main.cpp
         src/Physics/Collisions/Collision.cpp
         src/Physics/Collisions/Collision.h)
 
-# --- SDL2 SETUP ---
-set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
-set(SDL2_PATH "SDL2/x86_64-w64-mingw32")
+# --- PLATFORM DETECTION ---
+if(WIN32)
+    message(STATUS "Configuring for Windows")
 
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIR})
-target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY} ${SDL2_IMAGE_LIBRARIES})
+    # --- SDL2 Setup for Windows ---
+    set(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/cmake/modules)
+    set(SDL2_PATH "SDL2/x86_64-w64-mingw32")
+
+    find_package(SDL2 REQUIRED)
+    include_directories(${SDL2_INCLUDE_DIR})
+
+    # Link SDL2 and SDL2_image
+    target_link_libraries(${PROJECT_NAME} ${SDL2_LIBRARY})
+
+elseif(UNIX)
+    message(STATUS "Configuring for Linux")
+
+    # --- SDL2 Setup for Linux ---
+    find_package(SDL2 REQUIRED)
+    include_directories(${SDL2_INCLUDE_DIRS})
+
+    # Find SDL2_image
+    find_package(SDL2_image REQUIRED)
+    include_directories(${SDL2_IMAGE_INCLUDE_DIRS})
+
+    # Link SDL2 and SDL2_image
+    target_link_libraries(${PROJECT_NAME} SDL2::SDL2 SDL2_image::SDL2_image)
+
+endif()
