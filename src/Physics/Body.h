@@ -20,6 +20,7 @@ public:
     void clearAllForces();
     void applyTorque(float torque);
     void clearTorque();
+    void applyImpulse(const Vec2& j); // j = impulse
     bool isStatic() const;
 
     //constructor destructor
@@ -42,6 +43,7 @@ public:
     void setSumForces(const Vec2& sumForces) { this->sumForces = sumForces; }
     void setSumTorque(float sumTorque) { this->sumTorque = sumTorque; }
     void setIsColliding(bool collding) { this->collision = collding; }
+    void setRestitution(float restitution) { this->restitution = restitution; }
 
     Vec2& getPosition() { return  position; }
     Vec2& getVelocity() { return  velocity; }
@@ -57,6 +59,7 @@ public:
     Vec2& getSumForces() { return sumForces; }
     float getSumTorque() const { return sumTorque; }
     bool getIsColliding() const  { return  collision; }
+    float getRestitution() const { return restitution; }
 
 private:
     //linear moevement
@@ -71,12 +74,16 @@ private:
 
     float mass { 0 };
     float invMass { 0 };
+
     //moment of intertia
     float I { 0.f };
     float invI { 0.f };
 
     Vec2 sumForces { 0.f, 0.f};
     float sumTorque { 0.f };
+
+    //coeff of restitution ( elasticity )
+    float restitution { 1.f };
 
     bool collision { false };
 

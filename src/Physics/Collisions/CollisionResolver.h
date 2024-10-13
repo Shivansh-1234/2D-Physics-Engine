@@ -6,6 +6,7 @@
 class CollisionResolver {
 public:
     static void ResolveCollisionProjectionMethod(CollisionInformation& collInfo);
+    static void ResolveCollisionImpulseMethod(CollisionInformation& collInfo);
 };
 
 

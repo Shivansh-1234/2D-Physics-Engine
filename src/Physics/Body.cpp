@@ -115,6 +115,13 @@ void Body::clearAllForces(){
     sumForces.y = 0;
 }
 
+void Body::applyImpulse(const Vec2& j){
+    if(isStatic())  { return; }
+
+    velocity += j * invMass;
+}
+
+
 bool Body::isStatic() const {
     const float epsilon = 0.005f;
     return invMass < epsilon;
