@@ -16,7 +16,7 @@ class Application {
         Vec2 anchor { 0.f , 0.f};
         float restLength = 200.f;
 
-        CollisionInformation circlesCollisionInfo;
+        CollisionInformation shapeCollisionInfo;
 
     public:
         Application() = default;

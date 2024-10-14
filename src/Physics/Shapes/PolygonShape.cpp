@@ -73,4 +73,11 @@ std::vector<Vec2> PolygonShape::getWorldVertices() const
     return worldVertices;
 }
 
+Vec2 PolygonShape::GetEdgeAtIndex(const std::vector<Vec2> vertices, int vertexIndex) {
+    int currentVertexIndex = vertexIndex;
+    int nextVertexIndex = (vertexIndex + 1) % vertices.size();
+
+    return vertices[nextVertexIndex] - vertices[currentVertexIndex];
+}
+
 

@@ -18,8 +18,12 @@ bool Application::IsRunning() {
 void Application::Setup() {
     running = Graphics::OpenWindow();
 
-    auto* bigCircle = new Body(CircleShape(200.f), Constants::SCREEN_WIDTH / 2.f, Constants::SCREEN_HEIGHT / 2.f, 0.f);
-    bodyVec.push_back(bigCircle);
+    auto* bigBox = new Body(BoxShape(200.f, 200.f), Constants::SCREEN_WIDTH / 2.f, Constants::SCREEN_HEIGHT / 2.f, 1.f);
+    auto* smallBox = new Body(BoxShape(200.f, 200.f), Constants::SCREEN_WIDTH / 2.f, Constants::SCREEN_HEIGHT / 2.f, 1.f);
+    bigBox->setAngularVelocity(0.4f);
+    smallBox->setAngularVelocity(0.1f);
+    bodyVec.push_back(bigBox);
+    bodyVec.push_back(smallBox);
 
     // auto* box = new Body(BoxShape(200.f, 100.f), Constants::SCREEN_WIDTH / 2.f, Constants::SCREEN_HEIGHT / 2.f, 1.f);
     // bodyVec.push_back(box);
@@ -75,6 +79,8 @@ void Application::Input() {
             case SDL_MOUSEMOTION:
                 mousePos.x = event.motion.x;
                 mousePos.y = event.motion.y;
+                bodyVec[0]->getPosition().x = mousePos.x;
+                bodyVec[0]->getPosition().y = mousePos.y;
                 break;
             case SDL_MOUSEBUTTONDOWN:
                 {
@@ -82,9 +88,7 @@ void Application::Input() {
                     SDL_GetMouseState(&x, &y);
                     //mousePos.x = x;
                     //mousePos.y = y;
-                    auto* smallCircle = new Body(CircleShape(40.f), x, y, 1.f);
-                    smallCircle->setRestitution(0.9f);
-                    bodyVec.push_back(smallCircle);
+
                 }
                 break;
             case SDL_MOUSEBUTTONUP:
@@ -118,10 +122,10 @@ void Application::Update() {
         // body->applyForce(drag);
 
         Vec2 weight = Vec2(0.f, body->getMass() * 9.8f * Constants::PIXELS_PER_METER);
-        body->applyForce(weight);
+        //body->applyForce(weight);
 
         Vec2 wind = Vec2(2.0 * Constants::PIXELS_PER_METER, 0.0);
-        body->applyForce(wind);
+        //body->applyForce(wind);
 
         //float torque = 2000.f;
        // body->applyTorque(torque);
@@ -165,12 +169,12 @@ void Application::Update() {
             a->setIsColliding(false);
             b->setIsColliding(false);
 
-            circlesCollisionInfo = Collision::GetCollisionInformation(a, b);
+            shapeCollisionInfo = Collision::GetCollisionInformation(a, b);
 
-            if(circlesCollisionInfo.isColliding){
+            if(shapeCollisionInfo.isColliding){
                 a->setIsColliding(true);
                 b->setIsColliding(true);
-                CollisionResolver::ResolveCollisionImpulseMethod(circlesCollisionInfo);
+                //CollisionResolver::ResolveCollisionImpulseMethod(circlesCollisionInfo);
             }
         }
     }
@@ -229,29 +233,35 @@ void Application::Render() {
 
     for(auto & i : bodyVec){
 
+
         if(i->getShape()->GetType() == ShapeType::CIRCLE)
         {
             auto* circleShape = dynamic_cast<CircleShape*>(i->getShape());
 
-            //Uint32 circleColor = i->getIsColliding() ? 0xFF0000FF : 0xFFFFFFFF;
+            //Uint32 shapeColor = i->getIsColliding() ? 0xFF0000FF : 0xFFFFFFFF;
+
 
             Graphics::DrawFillCircle( i->getPosition().x, i->getPosition().y, circleShape->getRadius(), 0xFFFFFFFF);
 
-            // if(circlesCollisionInfo.isColliding) {
-            //     Graphics::DrawFillCircle(circlesCollisionInfo.start.x, circlesCollisionInfo.start.y, 3, 0xFFFF00FF);
-            //     Graphics::DrawFillCircle(circlesCollisionInfo.end.x, circlesCollisionInfo.end.y, 3, 0xFFFF00FF);
-            //     Graphics::DrawLine(circlesCollisionInfo.start.x,
-            //         circlesCollisionInfo.start.y,
-            //         circlesCollisionInfo.start.x + circlesCollisionInfo.normal.x * 15,
-            //         circlesCollisionInfo.start.y + circlesCollisionInfo.normal.y * 15,
+            // if(shapeCollisionInfo.isColliding) {
+            //     Graphics::DrawFillCircle(shapeCollisionInfo.start.x, shapeCollisionInfo.start.y, 3, 0xFFFF00FF);
+            //     Graphics::DrawFillCircle(shapeCollisionInfo.end.x, shapeCollisionInfo.end.y, 3, 0xFFFF00FF);
+            //     Graphics::DrawLine(shapeCollisionInfo.start.x,
+            //         shapeCollisionInfo.start.y,
+            //         shapeCollisionInfo.start.x + shapeCollisionInfo.normal.x * 15,
+            //         shapeCollisionInfo.start.y + shapeCollisionInfo.normal.y * 15,
             //         0xFFFF00FF
             //         );
             // }
+
         }
 
         if(i->getShape()->GetType() == ShapeType::BOX)  {
             auto* boxShape = dynamic_cast<BoxShape*>(i->getShape());
-            Graphics::DrawPolygon(i->getPosition().x, i->getPosition().y, boxShape->getWorldVertices(), 0xFFFFFFFF);
+
+            Uint32 shapeColor = i->getIsColliding() ? 0xFF0000FF : 0xFFFFFFFF;
+
+            Graphics::DrawPolygon(i->getPosition().x, i->getPosition().y, boxShape->getWorldVertices(), shapeColor);
         }
     }
 

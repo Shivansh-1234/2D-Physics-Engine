@@ -31,6 +31,8 @@ public:
     void setWorldVertices(const std::vector<Vec2>& vertices);
     std::vector<Vec2> getWorldVertices() const;
 
+    static Vec2 GetEdgeAtIndex(std::vector<Vec2> vertices, int vertexIndex);
+
 protected:
     std::vector<Vec2> localVertices;
     std::vector<Vec2> worldVertices;
