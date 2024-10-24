@@ -4,24 +4,27 @@ A 2D Physics Engine written in C++ and SDL
 Still a work in progress : Look for branches for current status
 
 Features Currently implemented : 
-Forces - 
-  Drag force
-  Spring Force
-  Friction Force
-  Gravitational Force
 
-Collision - 
-  Detection : 
-      AABB collisions
-      SAT collisions
-  Resolving :
-      Projection Method
-      Impulse Method
+  Forces - 
+    Drag force,
+    Spring Force,
+    Friction Force,
+    Gravitational Force
 
+
+    Collision :
+      Detection : 
+        AABB collisions,
+        SAT collisions
+      Resolving :
+        Projection Method,
+        Impulse Method
 
 Currently uses Euler integration for applying forces, still have to implement Verlet integration
 
 Thank you 😀
+
+
 
 Spring Force:
 
